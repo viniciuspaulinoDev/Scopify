@@ -6,12 +6,7 @@
 
 **Scopify** is a Python command-line tool designed for penetration testers and bug bounty hunters to quickly gather and analyze infrastructure information (CDN, Hosting, SaaS) for a target company by scraping `netify.ai`.
 
-It optionally leverages OpenAI's API to provide AI-driven analysis of the gathered infrastructure, highlighting potential areas of interest and suggesting reconnaissance methodologies (without naming specific tools).
-
-<!-- Placeholder for Demo/Screenshot -->
-## Demo
-
-*(Add a GIF or screenshot here showing the tool in action)*
+It optionally leverages OpenAI's API to provide AI-driven analysis of the gathered infrastructure, highlighting potential areas of interest and suggesting reconnaissance methodologies.
 
 ## Setup
 
