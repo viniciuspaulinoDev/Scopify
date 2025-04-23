@@ -76,14 +76,152 @@ Replace `'your-api-key-here'` with your actual OpenAI API key.
 python scopify.py -c walmart
 ```
 
+```bash
+--- CDNs ---
+CDNs                           # of IPs
+---------------------------------------------
+Akamai                         10382
+Amazon CloudFront              3076
+Fastly                         331
+Cloudflare                     16
+Azure Front Door               5
+
+
+--- Hosting ---
+Cloud Hosts                    # of IPs
+---------------------------------------------
+Google Hosted                  245
+Amazon AWS                     28
+Unitas Global                  17
+Microsoft Azure                15
+Equinix                        3
+Cloudinary                     1
+Google Cloud Platform          1
+Rackspace                      1
+WP Engine                      1
+
+
+--- SaaS ---
+SaaS                           # of IPs
+---------------------------------------------
+Email Studio                   221
+Adobe EM                       168
+Adobe Ads                      59
+SendGrid                       16
+Salesforce                     6
+Validity                       5
+LexisNexis Risk                3
+Mailgun                        2
+Pendo                          2
+MarkMonitor                    1
+Medallia                       1
+```
+
 **Example (With AI Analysis):**
 
 ```bash
-# First, set the environment variable (example for Linux/macOS)
-export OPENAI_API_KEY='sk-...' 
+--- AI Analysis --- 
+Analyzing infrastructure data with OpenAI...
 
-# Then run the tool with the --analyze flag
-python scopify.py -c walmart --analyze 
+1. CDN OBSERVATIONS
+
+  - Akamai (10 382 IPs)  
+    • Global edge network with robust WAF capabilities (Kona, GTM, Bot Manager).  
+    • Look for subdomain–origin mismatches (staging/test instances) via wildcard DNS or certificate transparency logs.  
+    • Test Host header and path‐based routing bypasses to reach internal origins.
+
+  - Amazon CloudFront (3 076 IPs)  
+    • Common misconfiguration: S3 bucket origin left public or locked behind custom domain.  
+    • Probe for Host header overrides and unvalidated redirects.  
+    • Enumerate unused edge configurations via custom CNAMEs in DNS records.
+
+  - Fastly (331 IPs)  
+    • Default VCL snippets can leak backend hostnames.  
+    • Potential open proxy behavior if VCL not locked down.  
+    • Fingerprint backend exposures by sending unusual HTTP verbs and headers.
+
+  - Cloudflare (16 IPs)  
+    • WAF and rate‐limiting active, but origin IPs often exposed via DNS history or archived scan data.  
+    • Check for subdomain takeover on unclaimed DNS entries (e.g., *.walmart.com pointing to Cloudflare but unregistered in Cloudflare dashboard).
+
+  - Azure Front Door (5 IPs)  
+    • Host rewrite misconfigurations may allow Host header bypass.  
+    • Verify custom domain validation to prevent unwanted CNAME mapping.
+
+
+
+2. HOSTING OBSERVATIONS
+
+  - Google Hosted (245 IPs)  
+    • High volume suggests static asset or microservice hosting.  
+    • GCP metadata service attacks if misconfigured; check for exposed metadata endpoints via SSRF.
+
+  - Amazon AWS (28 IPs)  
+    • Potential IAM role exposure in EC2 metadata; test for SSRF.  
+    • Publicly exposed services (e.g., ELB, API Gateway) could reveal unused endpoints.
+
+  - Unitas Global (17 IPs) & Equinix (3 IPs)  
+    • Likely colocation/shared transit.  
+    • Scan for open management interfaces (SSH, RDP) and default credentials.
+
+  - Microsoft Azure (15 IPs)  
+    • Similar SSRF/metadata considerations.  
+    • Check for Azure‑specific services (App Service, Function Apps) with default subdomains.
+
+  - Single‐IP Hosts (Cloudinary, GCP, Rackspace, WP Engine)  
+    • Specialized services; enumerate hostnames to uncover asset footprint or CMS backends.
+
+
+
+3. SAAS OBSERVATIONS
+
+  - Email Studio (221 IPs), Adobe EM (168 IPs), Adobe Ads (59 IPs)  
+    • Marketing automation platforms.  
+    • Inspect tracking pixels, CORS policies, and parameter injection in campaign URLs.
+
+  - SendGrid (16 IPs), Mailgun (2 IPs)  
+    • Email delivery APIs.  
+    • Test URL callbacks, webhook endpoints, and API key exposure in front‑end code.
+
+  - Salesforce (6 IPs)  
+    • CRM integration points; possible OAuth endpoints.  
+    • Look for custom subdomains (e.g., mycompany.salesforce.com) ripe for subdomain takeover or exposed metadata.
+
+  - Validity (5 IPs), LexisNexis Risk (3 IPs)  
+    • Data quality/risk scoring.  
+    • Assess JavaScript SDK integrations for unsafe POST requests or leakage of PII.
+
+  - Pendo (2 IPs), Medallia (1 IP), MarkMonitor (1 IP)  
+    • In‑app analytics and feedback widgets.  
+    • Scrutinize embedded scripts for client‑side logic flaws (XSS, insecure storage).
+
+
+
+4. METHODOLOGY
+
+  - Subdomain Enumeration  
+    • Use modern tooling to exhaust DNS, certificate transparency, and brute lists.
+
+  - WAF Fingerprinting & Bypass Testing  
+    • Send crafted payloads and monitor differences in response codes/headers to distinguish between CDNs.
+
+  - Origin Exposure Testing  
+    • Override DNS resolution locally to connect directly to edge or origin IPs and bypass CDN protections.
+
+  - Cloud Storage Enumeration  
+    • Query GrayHatWarfare for public bucket listings:  
+      https://buckets.grayhatwarfare.com/files?keywords=walmart
+
+  - SaaS Integration Review  
+    • Crawl front‑end code for third‑party SDKs, inspect endpoints, test CORS and authentication flows.
+
+  - Metadata & SSRF Checks  
+    • Target AWS/Azure/GCP metadata URLs via any SSRF‑susceptible parameter.
+
+  - Service Scan & Port Verification  
+    • Validate open ports and banner grabs on hosting IP ranges to identify exposed management interfaces.
+
+All findings should guide focused audit scopes and safe‑safe proof‑of‑concepts in line with Walmart’s bug bounty policy.
 ```
 
 **Output:**
